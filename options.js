@@ -47,6 +47,8 @@ $(window).load(function(){
 			$(this).val(currentOptions.timepresets[index]);
 		})
 	});
+
+	$('#vinfo').text('Version '+chrome.app.getDetails().version);
 });
 
 
