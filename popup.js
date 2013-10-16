@@ -24,7 +24,7 @@ $('#settings').on('click',function(){
 
 var storage = chrome.storage.local;
 
-$(window).load(function(){
+$(window).ready(function(){
 	storage.get('options', function(result){
 		var currentOptions;
 		currentOptions = result.options;
@@ -45,8 +45,7 @@ $(window).load(function(){
 		   	var time = parseInt($(this).attr('data-time'));	   	
 
 		   	chrome.tabs.query({
-		   		active: true,
-		   		windowType: "normal"
+		   		active: true
 		   	},function(thisTab){
 		   		BGPage.snooze(thisTab[0], time);
 		   	});

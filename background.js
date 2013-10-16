@@ -1,6 +1,5 @@
 console.log('TabSnooze Loaded!');
 
-
 // Analytics
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-44909415-1']);
@@ -41,12 +40,14 @@ storage.get('snoozeList', function(result){
 // Listener for updated tabs
 chrome.tabs.onUpdated.addListener(showPageAction);
 
+// Shows the page action when tab url is ready
 function showPageAction(tabId, changeInfo, tab) {
-	if(changeInfo.status=='complete'){
-	    chrome.pageAction.show(tabId);
-	}
+	// if(changeInfo.status=='complete'){
+	    chrome.pageAction.show(tabId); 
+	// } TODO: figure out why sometimes there's no tabID ready.
 };
 
+// To know which one to go to when clicking a notification
 var lastOpenedTab;
 
 function snooze(tab, time){
@@ -60,14 +61,20 @@ function snooze(tab, time){
 
 	_gaq.push(['_trackEvent', 'Snoozing', 'Snoozing', 'Snoozing', time]);
 
-	var openTime = Date.now() + (time * 1000);
+	var openingTime = Date.now() + (time * 1000);
 
-	tab.openTime = openTime;
+	tab.openingTime = openingTime;
 	tab.snoozeTime = Date.now();
-	tab.snoozedAlready = false;
+	tab.openedAlready = false;
 
-	chrome.alarms.create(snoozeId, { when: openTime });
-	chrome.tabs.remove(tab.id);
+	chrome.alarms.create(snoozeId, { when: openingTime });
+
+	// Close the tab if the options say so.
+	storage.get('options', function(result){
+		if(result.options.closetab){
+			chrome.tabs.remove(tab.id);
+		}
+	});
 
 	// Store the tab info under the snoozeId
 	storage.get('snoozeList', function(result){
@@ -75,14 +82,15 @@ function snooze(tab, time){
 		newList[snoozeId] = tab;
 		storage.set({ snoozeList : newList}, function(){});
 	});
-
 }
 
 chrome.alarms.onAlarm.addListener(function(alarm){
-	storage.get('snoozeList',function(result){
+	storage.get(function(result){
 
-		var tab;
-		tab = result.snoozeList[alarm.name];
+		var tab = result.snoozeList[alarm.name];
+
+		// Get the options
+		var options = result.options;
 
 		var newTab;
 
@@ -90,15 +98,22 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 
 		_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
 
+
+		// Decide if the created tab should be active
 		chrome.tabs.create({
-			index: 999,
 			url: tab.url,
-			active: false
+			active: !options.background
 		}, function(createdTab){
 			lastOpenedTab = createdTab;
-			chrome.tabs.executeScript(createdTab.id, {'file':'jquery.min.js'});
-			chrome.tabs.executeScript(createdTab.id, {'file':'content.js'});
-			chrome.tabs.insertCSS(createdTab.id, {'file':'content.css'});
+			if (options.snoozebar){
+				chrome.tabs.executeScript(createdTab.id, {'file':'jquery.min.js'});
+				chrome.tabs.executeScript(createdTab.id, {'file':'moment.min.js'});
+				chrome.tabs.insertCSS(createdTab.id, {'file':'content.css'});
+				var whenCreated = tab.snoozeTime;
+				// Pass the snooze time parameter to the content script.
+				chrome.tabs.executeScript(createdTab.id, {code:'var whenCreated="'+whenCreated+'";'});
+				chrome.tabs.executeScript(createdTab.id, {'file':'content.js'});
+			}
 		});
 		
 		chrome.notifications.create('snooze'+tab.id,{

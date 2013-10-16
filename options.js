@@ -23,11 +23,11 @@ storage.get('snoozeList', function(result){
 
 	for (var snooze in snoozeList){
 		var thisSnooze = snoozeList[snooze];
-		var timeFromNow = Math.floor((thisSnooze.openTime-Date.now())/60000);
+		var timeFromNow = Math.floor((thisSnooze.openingTime-Date.now())/60000);
 
 		var timeAgo = moment(thisSnooze.snoozeTime).fromNow();
 		if(timeFromNow>0){	
-			timeFromNow = (moment(thisSnooze.openTime).fromNow());
+			timeFromNow = (moment(thisSnooze.openingTime).fromNow());
 			var newLi = '<li><img src="'+thisSnooze.favIconUrl+'"> <a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')</li>';
 			$('#snoozeList').append(newLi);
 		}
