@@ -11,6 +11,7 @@
 	font-size: 15px;
 	font-family: sans-serif;
 	z-index: 99999;
+	cursor: pointer;
 }
 
 #tabsnoozelayer #tabsnoozelayerx{

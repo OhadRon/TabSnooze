@@ -53,8 +53,14 @@
         	font-family: 'Roboto',sans-serif;
         }
 
-        #savebutton{
-        	width: 120px;
+        .timedesc{
+        	display: inline-block;
+        	margin-left: 5px;
+        	font-size: 14px;
+        }
+
+        .timedesc.error{
+        	color: #b50e1d;
         }
 
         </style>
@@ -74,17 +80,16 @@
 		<li><input type="checkbox" class="optioncheckbox" data-option="background"> Start snooze tabs in the background</li>
 		<li>Time presets (in hours):<br> 
 			<ul>
-				<li>1 <input type="text" class="timepreset" size="10"></li>
-				<li>2 <input type="text" class="timepreset" size="10"></li>
-				<li>3 <input type="text" class="timepreset" size="10"></li>
-				<li>4 <input type="text" class="timepreset" size="10"></li>
-				<li>5 <input type="text" class="timepreset" size="10"></li>
-				<li>6 <input type="text" class="timepreset" size="10"></li>
-				<li>7 <input type="text" class="timepreset" size="10"></li>
-				<li>8 <input type="text" class="timepreset" size="10"></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
 			</ul>
 		</li>
-		<li><button id="savebutton">Save</button></li>
 	</ul>
 	<div id="footer">Made by <a href="http://ohadron.com">Ohad Ron</a>, 2013 <br><div id="vinfo"></div>	</div>
 </div>

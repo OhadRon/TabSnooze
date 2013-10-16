@@ -14,6 +14,14 @@ _gaq.push(['_trackPageview']);
 // Get main storage
 var storage = chrome.storage.local;
 
+function seeStorage(){
+	chrome.storage.local.get(null,function(result){ console.log(result)});
+}
+
+function seeOptions(){
+	chrome.storage.local.get('options',function(result){ console.log(result)});
+}
+
 // Defaults
 var DEFAULT_OPTIONS = {
 	closetab: true,
@@ -108,6 +116,7 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 				var whenCreated = tab.snoozeTime;
 				// Pass the snooze time parameter to the content script.
 				chrome.tabs.executeScript(createdTab.id, {code:'var whenCreated="'+whenCreated+'";'});
+				chrome.tabs.executeScript(createdTab.id, {code:'var backgroundOpen='+options.background+';'});
 				chrome.tabs.executeScript(createdTab.id, {'file':'content.js'});
 			}
 			if (options.notifications){		
@@ -121,8 +130,13 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 					_gaq.push(['_trackEvent', 'Notification Created', 'Notification Created']);
 				});
 			}
+
+			// Mark the current alarm as opened already.
+			var newList = result.snoozeList;
+			newList[alarm.name].openedAlready = true;
+			newList[alarm.name].realOpeningTime = Date.now();
+			storage.set({ snoozeList : newList}, function(){});
 		});
-		
 	});
 });
 

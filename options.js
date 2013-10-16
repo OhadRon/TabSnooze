@@ -41,15 +41,53 @@ $(window).load(function(){
 
 		$('.optioncheckbox').each(function(){
 			$(this).prop('checked', currentOptions[$(this).attr('data-option')]);
+			$(this).change(function(){
+				var optionName = $(this).attr('data-option');
+				var newValue = $(this).prop('checked');
+				storage.get('options', function(result){
+					var newOptions = result.options;
+					newOptions[optionName] = newValue;
+					storage.set({ options : newOptions}, function(){});
+				});
+			});
 		});
 
 		$('input.timepreset').each(function(index){
+
 			$(this).val(currentOptions.timepresets[index]);
-		})
+
+			var $this = $(this);
+
+			function validateIt(){
+				if(isNumber($this.val())){
+					var textValue = moment().add('h',$this.val()).fromNow(true);
+					$this.siblings('.timedesc').text(textValue);
+					$this.siblings('.timedesc').removeClass('error');
+					storage.get('options', function(result){
+						var newOptions = result.options;
+						newOptions.timepresets[index] = parseFloat($this.val());
+						storage.set({ options : newOptions}, function(){});
+					});
+				} else {
+					$this.siblings('.timedesc').text('Not a valid number of hours');
+					$this.siblings('.timedesc').addClass('error');
+				}				
+			};
+
+			validateIt();
+
+			$this.change(function(){
+				validateIt();
+			});
+
+		});
 	});
 
 	$('#vinfo').text('Version '+chrome.app.getDetails().version);
 });
 
-
+// Check if something is a number (for hours)
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};
 

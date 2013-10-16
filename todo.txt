@@ -1,8 +1,3 @@
-show and edit absolute times in settings
 display changelog
 icon
 options page design
-migrate background page to event pages
-Bring up the extension on load - do not wait for complete tab loading
-
-bug - sometimes alarms get stuck and when opening a new one the stuck one also gets up
