@@ -50,6 +50,7 @@ $(window).ready(function(){
 		   		BGPage.snooze(thisTab[0], time);
 		   	});
 
+	   		window.close();
 		});
 
 	});
