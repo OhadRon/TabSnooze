@@ -1,0 +1,9 @@
+Show time in snooze tab
+show and edit absolute times in settings
+display version in settings
+display changelog
+activate and use settings
+icon
+options page design
+migrate background page to event pages
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>TabSnooze Popup</title>
+        <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
+
+        <style type="text/css">
+
+        body{
+        	width: 150px;
+        	font-family: 'Roboto', sans-serif;
+        	margin: 10;
+        	padding: 0;
+        }
+
+        #title{
+        	text-align: center;
+        	margin: 0 auto;
+        	font-size: 18px;
+        	color: #1e5273;
+        	margin-top: 15px;
+        }
+
+        #snoozeoptions{
+        	list-style: none;
+        	font-size: 13px;
+        	margin: 10px 4px;
+        }
+
+        #snoozeoptions div{
+        	line-height: 20px;
+        	text-align: center;
+        }
+
+        #footer{
+        	text-align: center;
+        	font-size: 12px;
+        }
+
+        a:focus{
+        	outline: none;
+        }
+
+        #settings{
+        	cursor: pointer;
+        	text-align: center;
+        	font-size: 14px;
+        }
+
+        </style>
+    </head>
+    
+    <body>
+    	<div id="title">Snooze this tab</div>
+    	<div id="snoozeoptions">
+
+    	</div>
+    	<div id="settings">Settings</div>
+        <script type="text/javascript" src="jquery.min.js"></script>
+		<script type="text/javascript" src="moment.min.js"></script>
+    	<script type="text/javascript" src="popup.js"></script>
+    </body>
+</html>
