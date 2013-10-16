@@ -47,9 +47,6 @@ function showPageAction(tabId, changeInfo, tab) {
 	// } TODO: figure out why sometimes there's no tabID ready.
 };
 
-// To know which one to go to when clicking a notification
-var lastOpenedTab;
-
 function snooze(tab, time){
 	
 	// Decide on the name of the snooze in the storage
@@ -104,7 +101,6 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 			url: tab.url,
 			active: !options.background
 		}, function(createdTab){
-			lastOpenedTab = createdTab;
 			if (options.snoozebar){
 				chrome.tabs.executeScript(createdTab.id, {'file':'jquery.min.js'});
 				chrome.tabs.executeScript(createdTab.id, {'file':'moment.min.js'});
@@ -114,24 +110,32 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 				chrome.tabs.executeScript(createdTab.id, {code:'var whenCreated="'+whenCreated+'";'});
 				chrome.tabs.executeScript(createdTab.id, {'file':'content.js'});
 			}
+			if (options.notifications){		
+				chrome.notifications.create('snoozeNotif'+createdTab.id,{
+					type: "basic",
+					title: "Tab Woke Up!",
+					message: tab.title,
+					eventTime: Date.now(),
+					iconUrl: "images/icon19.png"
+				}, function(){
+					_gaq.push(['_trackEvent', 'Notification Created', 'Notification Created']);
+				});
+			}
 		});
 		
-		chrome.notifications.create('snooze'+tab.id,{
-			type: "basic",
-			title: "Tab Woke Up!",
-			message: tab.title,
-			iconUrl: "images/icon19.png"
-		}, function(){
-			_gaq.push(['_trackEvent', 'Notification Created', 'Notification Created']);
-		});
 	});
 });
 
 chrome.notifications.onClicked.addListener(function(notificationId){
-	console.log('Notification clicked for tab '+lastOpenedTab.id);
-	console.log('Focusing tab (tab '+lastOpenedTab.id+') (window '+lastOpenedTab.windowId+')');
-	chrome.tabs.update(lastOpenedTab.id, {selected: true});
-	chrome.windows.update(lastOpenedTab.windowId, {focused:true});
-	chrome.notifications.clear(notificationId, function(){});
-	_gaq.push(['_trackEvent', 'Notification Cleared']);
+	// Get the tab id
+	var tabId = parseInt(notificationId.substr(11));
+	console.log('Notification clicked for tab '+tabId);
+	// Get the actual tab object
+	chrome.tabs.get(tabId, function(tab){
+		console.log('Focusing tab (tab '+tab.id+') (window '+tab.windowId+')');
+		chrome.tabs.update(tab.id, {selected: true});
+		chrome.windows.update(tab.windowId, {focused:true});
+		chrome.notifications.clear(notificationId, function(){});
+		_gaq.push(['_trackEvent', 'Notification Cleared']);
+	});
 });			

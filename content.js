@@ -12,6 +12,6 @@ console.log(whenCreated);
 
 $('#tabsnoozelayer').hide();
 
-$(window).focus(function(){
+$(window,document).on('focus hover click scroll',function(){
 	$('#tabsnoozelayer').slideDown(400);
 });
