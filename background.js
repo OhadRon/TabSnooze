@@ -1,9 +1,13 @@
 console.log('TabSnooze Loaded!');
 
+var currentVersion = 'v'+chrome.app.getDetails().version;
+
+
 // Analytics
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-44909415-1']);
 _gaq.push(['_trackPageview']);
+_gaq.push(['_trackEvent', 'Loaded', 'Loaded', currentVersion ]);
 
 (function() {
   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
