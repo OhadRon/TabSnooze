@@ -115,7 +115,7 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 				chrome.tabs.insertCSS(createdTab.id, {'file':'content.css'});
 				var whenCreated = tab.snoozeTime;
 				// Pass the snooze time parameter to the content script.
-				chrome.tabs.executeScript(createdTab.id, {code:'var whenCreated="'+whenCreated+'";'});
+				chrome.tabs.executeScript(createdTab.id, {code:'var whenCreated='+whenCreated+';'});
 				chrome.tabs.executeScript(createdTab.id, {code:'var backgroundOpen='+options.background+';'});
 				chrome.tabs.executeScript(createdTab.id, {'file':'content.js'});
 			}
