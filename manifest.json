@@ -3,7 +3,7 @@
 
   "name": "TabSnooze",
   "description": "Make tabs come back later",
-  "version": "0.19",
+  "version": "0.20",
 
   "permissions": [
     "tabs",

@@ -28,7 +28,13 @@ storage.get('snoozeList', function(result){
 		var timeAgo = moment(thisSnooze.snoozeTime).fromNow();
 		if(timeFromNow>0){	
 			timeFromNow = (moment(thisSnooze.openingTime).fromNow());
-			var newLi = '<li><img src="'+thisSnooze.favIconUrl+'"> <a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')</li>';
+			var image;
+			if (thisSnooze.favIconUrl){
+				image = '<img src="'+thisSnooze.favIconUrl+'">';
+			} else {
+				image = '';
+			}
+			var newLi = '<li>'+image+'<a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')</li>';
 			$('#snoozeList').append(newLi);
 		}
 	}

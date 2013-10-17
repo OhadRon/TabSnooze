@@ -2,7 +2,6 @@ console.log('TabSnooze Loaded!');
 
 var currentVersion = 'v'+chrome.app.getDetails().version;
 
-
 // Analytics
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-44909415-1']);
@@ -24,6 +23,10 @@ function seeStorage(){
 
 function seeOptions(){
 	chrome.storage.local.get('options',function(result){ console.log(result)});
+}
+
+function clearStorage(){
+	storage.set({ snoozeList : {}}, function(){});
 }
 
 // Defaults
@@ -48,6 +51,26 @@ storage.get('options', function(result){
 storage.get('snoozeList', function(result){
 	if (!result.snoozeList)	storage.set({ snoozeList : {}}, function(){});
 });
+
+
+function clearUsedAlarms(){
+	console.log('Clearing used alarms...');
+	var clearCount = 0;
+	storage.get('snoozeList', function(result){
+		var newList = result.snoozeList;
+		for (var snooze in newList){
+			var thisSnooze = newList[snooze];
+			if (thisSnooze.openedAlready){
+				delete newList[snooze];
+				clearCount += 1;
+			};
+		};
+		storage.set({ snoozeList : newList}, function(){});
+		console.log('Cleared '+clearCount+ ' alarms.');
+	});
+}
+
+clearUsedAlarms();
 
 // Listener for updated tabs
 chrome.tabs.onUpdated.addListener(showPageAction);
@@ -78,35 +101,34 @@ function snooze(tab, time){
 
 	chrome.alarms.create(snoozeId, { when: openingTime });
 
+	// Store the tab info under the snoozeId
+	storage.get('snoozeList', function(result){
+		var newList = result.snoozeList;
+		newList[snoozeId] = tab;
+		console.log('Storing alarm', snoozeId);
+		storage.set({ snoozeList : newList}, function(){});
+	});
+
 	// Close the tab if the options say so.
 	storage.get('options', function(result){
 		if(result.options.closetab){
 			chrome.tabs.remove(tab.id);
 		}
 	});
-
-	// Store the tab info under the snoozeId
-	storage.get('snoozeList', function(result){
-		var newList = result.snoozeList;
-		newList[snoozeId] = tab;
-		storage.set({ snoozeList : newList}, function(){});
-	});
 }
 
 chrome.alarms.onAlarm.addListener(function(alarm){
+	console.log('Alarm activated:', alarm)
 	storage.get(function(result){
 
 		var tab = result.snoozeList[alarm.name];
 
 		// Get the options
 		var options = result.options;
-
 		var newTab;
 
 		console.log('Creating new tab: '+tab.title);
-
-		_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
-
+			_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
 
 		// Decide if the created tab should be active
 		chrome.tabs.create({
@@ -126,7 +148,7 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 			if (options.notifications){		
 				chrome.notifications.create('snoozeNotif'+createdTab.id,{
 					type: "basic",
-					title: "Tab Woke Up!",
+					title: "A Tab Woke Up!",
 					message: tab.title,
 					eventTime: Date.now(),
 					iconUrl: "images/icon19.png"
