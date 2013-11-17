@@ -1,7 +1,6 @@
 display changelog
 icon, 128, 38, 19
 options page design
-clear used up snoozes
 
 snooze all to the left / right
 

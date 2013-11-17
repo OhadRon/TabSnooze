@@ -1,6 +1,5 @@
 var BGPage = chrome.extension.getBackgroundPage();
 
-
 console.log('Settings page loaded');
 
 var _gaq = _gaq || [];

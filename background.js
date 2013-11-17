@@ -128,7 +128,7 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 		var newTab;
 
 		console.log('Creating new tab: '+tab.title);
-			_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
+		_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
 
 		// Decide if the created tab should be active
 		chrome.tabs.create({
