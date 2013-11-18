@@ -4,3 +4,6 @@ options page design
 
 snooze all to the left / right
 
+in page notification shows a bit late - only after clicking the notification
+
+

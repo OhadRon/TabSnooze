@@ -1,6 +1,7 @@
 console.log('TabSnooze Loaded!');
 
 var currentVersion = 'v'+chrome.app.getDetails().version;
+var loadTime = Date.now();
 
 // Analytics
 var _gaq = _gaq || [];
@@ -40,7 +41,7 @@ var DEFAULT_OPTIONS = {
 
 // Set default options if they're not set
 storage.get('options', function(result){
-	console.log(result.options);
+	console.log('Current options:', result.options);
 	if (!result.options){
 		storage.set({ options : DEFAULT_OPTIONS }, function(){});
 		_gaq.push(['_trackEvent', 'Installed', 'Installed']);
@@ -63,10 +64,14 @@ function clearUsedAlarms(){
 			if (thisSnooze.openedAlready){
 				delete newList[snooze];
 				clearCount += 1;
-			};
+			} else if (thisSnooze.openingTime < Date.now()-10000){
+				console.warn('Deleting failed snooze', newList[snooze]);
+				delete newList[snooze];
+				clearCount += 1;
+			}
 		};
 		storage.set({ snoozeList : newList}, function(){});
-		console.log('Cleared '+clearCount+ ' alarms.');
+		console.log('Finished clearing '+clearCount+ ' alarms.');
 	});
 }
 
@@ -127,42 +132,53 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 		var options = result.options;
 		var newTab;
 
-		console.log('Creating new tab: '+tab.title);
-		_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
+		console.log('Creating new tab: '+tab.title, tab);
 
-		// Decide if the created tab should be active
-		chrome.tabs.create({
-			url: tab.url,
-			active: !options.background
-		}, function(createdTab){
-			if (options.snoozebar){
-				chrome.tabs.executeScript(createdTab.id, {'file':'jquery.min.js'});
-				chrome.tabs.executeScript(createdTab.id, {'file':'moment.min.js'});
-				chrome.tabs.insertCSS(createdTab.id, {'file':'content.css'});
-				var whenCreated = tab.snoozeTime;
-				// Pass the snooze time parameter to the content script.
-				chrome.tabs.executeScript(createdTab.id, {code:'var whenCreated='+whenCreated+';'});
-				chrome.tabs.executeScript(createdTab.id, {code:'var backgroundOpen='+options.background+';'});
-				chrome.tabs.executeScript(createdTab.id, {'file':'content.js'});
-			}
-			if (options.notifications){		
-				chrome.notifications.create('snoozeNotif'+createdTab.id,{
-					type: "basic",
-					title: "A Tab Woke Up!",
-					message: tab.title,
-					eventTime: Date.now(),
-					iconUrl: "images/icon19.png"
-				}, function(){
-					_gaq.push(['_trackEvent', 'Notification Created', 'Notification Created']);
-				});
-			}
+		var createTheNewTab = function(){
+			chrome.tabs.create({
+				url: tab.url,
+				active: !options.background // Decide if the created tab should be active
+			}, function(createdTab){
+				console.log('Created a tab:',createdTab);
+				if (createdTab){ // To make sure we don't make a party for errors
+					if (options.snoozebar){
+						console.log('Showing snoozebar', createdTab.id);
+						chrome.tabs.executeScript(createdTab.id, {'file':'jquery.min.js'});
+						chrome.tabs.executeScript(createdTab.id, {'file':'moment.min.js'});
+						chrome.tabs.insertCSS(createdTab.id, {'file':'content.css'});
+						var whenCreated = tab.snoozeTime;
+						// Pass the snooze time parameter to the content script.
+						chrome.tabs.executeScript(createdTab.id, {code:'var whenCreated='+whenCreated+';'});
+						chrome.tabs.executeScript(createdTab.id, {code:'var backgroundOpen='+options.background+';'});
+						chrome.tabs.executeScript(createdTab.id, {'file':'content.js'});
+					}
+					if (options.notifications){		
+						console.log('Showing notification', createdTab.id);
+						chrome.notifications.create('snoozeNotif'+createdTab.id,{
+							type: "basic",
+							title: "A Tab Woke Up!",
+							message: tab.title,
+							eventTime: Date.now(),
+							iconUrl: "images/icon19.png"
+						}, function(){
+							_gaq.push(['_trackEvent', 'Notification Created', 'Notification Created']);
+						});
+					}
 
-			// Mark the current alarm as opened already.
-			var newList = result.snoozeList;
-			newList[alarm.name].openedAlready = true;
-			newList[alarm.name].realOpeningTime = Date.now();
-			storage.set({ snoozeList : newList}, function(){});
-		});
+					// Mark the current alarm as opened already.
+					var newList = result.snoozeList;
+					newList[alarm.name].openedAlready = true;
+					newList[alarm.name].realOpeningTime = Date.now();
+					storage.set({ snoozeList : newList}, function(){});				
+					_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
+				} else {
+					console.warn('Tab creation failed! Delaying alarm', alarm);
+					chrome.alarms.create(alarm.name, { when: Date.now()+4000 });
+				}
+			});			
+		};
+
+		createTheNewTab();
 	});
 });
 
@@ -172,10 +188,14 @@ chrome.notifications.onClicked.addListener(function(notificationId){
 	console.log('Notification clicked for tab '+tabId);
 	// Get the actual tab object
 	chrome.tabs.get(tabId, function(tab){
-		console.log('Focusing tab (tab '+tab.id+') (window '+tab.windowId+')');
-		chrome.tabs.update(tab.id, {selected: true});
-		chrome.windows.update(tab.windowId, {focused:true});
-		chrome.notifications.clear(notificationId, function(){});
-		_gaq.push(['_trackEvent', 'Notification Cleared']);
+		if(tab){	
+			console.log('Focusing tab (tab '+tab.id+') (window '+tab.windowId+')');
+			chrome.tabs.update(tab.id, {selected: true});
+			chrome.windows.update(tab.windowId, {focused:true});
+			chrome.notifications.clear(notificationId, function(){});
+			_gaq.push(['_trackEvent', 'Notification Cleared']);
+		} else {
+			console.log('Tab was not found',tabId);
+		}
 	});
 });			
