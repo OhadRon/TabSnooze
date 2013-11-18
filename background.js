@@ -18,6 +18,13 @@ _gaq.push(['_trackEvent', 'Loaded', 'Loaded', currentVersion ]);
 // Get main storage
 var storage = chrome.storage.local;
 
+// Inform when the extension has been upgraded
+chrome.runtime.onInstalled.addListener(function (){
+	console.log('Version upgraded:', currentVersion);
+	_gaq.push(['_trackEvent', 'Upgraded', 'Upgraded', currentVersion]);
+});
+
+
 function seeStorage(){
 	chrome.storage.local.get(null,function(result){ console.log(result)});
 }
