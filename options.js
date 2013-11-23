@@ -19,9 +19,12 @@ var snoozeList;
 storage.get('snoozeList', function(result){
 	snoozeList = result.snoozeList;
 
+
+	// TODO: add a function in background.js that returns all the active snoozes, for this and for the popup count.
+
 	for (var snooze in snoozeList){
 		var thisSnooze = snoozeList[snooze];
-		var timeFromNow = Math.floor((thisSnooze.openingTime-Date.now())/60000);
+		var timeFromNow = thisSnooze.openingTime-Date.now();
 
 		var timeAgo = moment(thisSnooze.snoozeTime).fromNow();
 		if(timeFromNow>0){	

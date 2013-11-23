@@ -15,7 +15,7 @@ _gaq.push(['_trackPageview']);
 })();
 
 
-$('#settings').on('click',function(){
+$('#settings, #sleepingtabs #num').on('click',function(){
 	chrome.tabs.create({
 		'url': chrome.extension.getURL("options.html"),
 		'active':true
@@ -52,6 +52,24 @@ $(window).ready(function(){
 
 	   		window.close();
 		});
+	});
 
+	// Count currently active snoozes
+
+	storage.get('snoozeList', function(result){
+		var snoozeList = result.snoozeList;
+		var snoozeCount = 0;
+
+		for (var snooze in snoozeList){
+
+			var thisSnooze = snoozeList[snooze];
+			var timeFromNow = thisSnooze.openingTime-Date.now();
+
+			if(timeFromNow>0){	
+				snoozeCount +=1;
+			}
+		}
+
+		$('#sleepingtabs #num').text(snoozeCount.toString());
 	});
 });

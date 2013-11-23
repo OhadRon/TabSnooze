@@ -8,29 +8,47 @@
         <style type="text/css">
 
         body{
-        	width: 150px;
+        	width: 180px;
         	font-family: 'Roboto', sans-serif;
-        	margin: 10;
+        	margin: 10px 0px 10px 0px;
         	padding: 0;
         }
 
         #title{
         	text-align: center;
         	margin: 0 auto;
-        	font-size: 18px;
-        	color: #1e5273;
+        	font-size: 15px;
+            font-weight: bold;
+        	color: #2c2c2c;
         	margin-top: 15px;
         }
 
         #snoozeoptions{
         	list-style: none;
         	font-size: 13px;
-        	margin: 10px 4px;
+        	margin: 3px 4px 10px 4px;
+        }
+
+        #snoozeoptions a{
+            color: #4fb695;
+            font-weight: bold;
         }
 
         #snoozeoptions div{
         	line-height: 20px;
         	text-align: center;
+        }
+
+        #sleepingtabs{
+            text-align: center;
+            background-color: #d9efe7;
+            padding: 5px 0px 10px 0px;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        #sleepingtabs #num{
+            font-size: 26px;
         }
 
         #footer{
@@ -45,17 +63,24 @@
         #settings{
         	cursor: pointer;
         	text-align: center;
-        	font-size: 14px;
+        	font-weight: bold;
+            color: #4fb695;
+            font-size: 13px;
+            text-decoration: underline;
         }
 
         </style>
     </head>
     
     <body>
-    	<div id="title">Snooze this tab</div>
+    	<div id="title">Snooze this tab:</div>
     	<div id="snoozeoptions">
 
     	</div>
+        <div id="sleepingtabs">
+            <div id="num"></div>
+            <div>sleeping tabs</div>
+        </div>
     	<div id="settings">Settings</div>
         <script type="text/javascript" src="jquery.min.js"></script>
 		<script type="text/javascript" src="moment.min.js"></script>
