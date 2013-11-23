@@ -12,7 +12,6 @@ _gaq.push(['_trackPageview']);
   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 
-
 var storage = chrome.storage.local;
 
 var snoozeList;
@@ -33,8 +32,15 @@ storage.get('snoozeList', function(result){
 			} else {
 				image = '';
 			}
-			var newLi = '<li>'+image+'<a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')</li>';
+			var newLi = '<li>'+image+'<a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')<div class="deleteSnooze" data-id='+thisSnooze.id+'>delete</div></li>';
 			$('#snoozeList').append(newLi);
+
+			$('div.deleteSnooze[data-id='+thisSnooze.id+']').on('click', function(){
+				var deletionAlarmName = 'snoozeTab'+$(this).attr('data-id');
+				console.log('delete clicked', deletionAlarmName);
+				$(this).parent('li').remove();
+				chrome.alarms.clear(deletionAlarmName);
+			});
 		}
 	}
 });

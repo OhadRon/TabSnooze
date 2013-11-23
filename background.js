@@ -1,6 +1,11 @@
-console.log('TabSnooze Loaded!');
+var timeStamp = function(){
+	return '[' + new Date().toTimeString() + '] ';
+}
 
-var currentVersion = 'v'+chrome.app.getDetails().version;
+console.log(timeStamp(), 'TabSnooze Loaded!');
+
+
+var currentVersion = chrome.app.getDetails().version;
 var loadTime = Date.now();
 
 // Analytics
@@ -19,9 +24,11 @@ _gaq.push(['_trackEvent', 'Loaded', 'Loaded', currentVersion ]);
 var storage = chrome.storage.local;
 
 // Inform when the extension has been upgraded
-chrome.runtime.onInstalled.addListener(function (){
-	console.log('Version upgraded:', currentVersion);
-	_gaq.push(['_trackEvent', 'Upgraded', 'Upgraded', currentVersion]);
+chrome.runtime.onInstalled.addListener(function (details){
+	if (details.previousVersion != currentVersion){
+		console.log('Version upgraded:', currentVersion);
+		_gaq.push(['_trackEvent', 'Upgraded', 'Upgraded', currentVersion]);		
+	}
 });
 
 
@@ -48,7 +55,7 @@ var DEFAULT_OPTIONS = {
 
 // Set default options if they're not set
 storage.get('options', function(result){
-	console.log('Current options:', result.options);
+	console.log(timeStamp(),'Current options:', result.options);
 	if (!result.options){
 		storage.set({ options : DEFAULT_OPTIONS }, function(){});
 		_gaq.push(['_trackEvent', 'Installed', 'Installed']);
@@ -71,14 +78,14 @@ function clearUsedAlarms(){
 			if (thisSnooze.openedAlready){
 				delete newList[snooze];
 				clearCount += 1;
-			} else if (thisSnooze.openingTime < Date.now()-10000){
+			} else if (thisSnooze.openingTime < Date.now()-15000){
 				console.warn('Deleting failed snooze', newList[snooze]);
 				delete newList[snooze];
 				clearCount += 1;
 			}
 		};
 		storage.set({ snoozeList : newList}, function(){});
-		console.log('Finished clearing '+clearCount+ ' alarms.');
+		console.log(timeStamp(),'Finished clearing '+clearCount+ ' alarms.');
 	});
 }
 
@@ -99,7 +106,7 @@ function snooze(tab, time){
 	// Decide on the name of the snooze in the storage
 	var snoozeId = 'snoozeTab'+tab.id;
 
-	console.log("Snoozing "+tab.title+" in "+time+" seconds. ("+snoozeId+")");
+	console.log(timeStamp(),"Snoozing "+tab.title+" in "+time+" seconds. ("+snoozeId+")");
 
 	var url = tab.url;
 
@@ -117,7 +124,7 @@ function snooze(tab, time){
 	storage.get('snoozeList', function(result){
 		var newList = result.snoozeList;
 		newList[snoozeId] = tab;
-		console.log('Storing alarm', snoozeId);
+		console.log(timeStamp(),'Storing alarm', snoozeId);
 		storage.set({ snoozeList : newList}, function(){});
 	});
 
@@ -130,23 +137,27 @@ function snooze(tab, time){
 }
 
 chrome.alarms.onAlarm.addListener(function(alarm){
-	console.log('Alarm activated:', alarm)
+	console.log(timeStamp(),'Alarm activated:', alarm)
 	storage.get(function(result){
 
 		var tab = result.snoozeList[alarm.name];
+
+		if (!tab){
+			console.warn(timeStamp(),'No corresponding snooze for this alarm!',alarm.name);
+		}
 
 		// Get the options
 		var options = result.options;
 		var newTab;
 
-		console.log('Creating new tab: '+tab.title, tab);
+		console.log(timeStamp(),'Creating new tab: '+tab.title, tab);
 
 		var createTheNewTab = function(){
 			chrome.tabs.create({
 				url: tab.url,
 				active: !options.background // Decide if the created tab should be active
 			}, function(createdTab){
-				console.log('Created a tab:',createdTab);
+				console.log(timeStamp(),'Created a tab:',createdTab);
 				if (createdTab){ // To make sure we don't make a party for errors
 					if (options.snoozebar){
 						console.log('Showing snoozebar', createdTab.id);
@@ -179,7 +190,8 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 					storage.set({ snoozeList : newList}, function(){});				
 					_gaq.push(['_trackEvent', 'Snooze Succesful', 'Snooze Succesful']);
 				} else {
-					console.warn('Tab creation failed! Delaying alarm', alarm);
+					// If the tab creation was failed because the window was not ready, delay by a few seconds.
+					console.warn(timeStamp(),'Tab creation failed! Delaying alarm', alarm);
 					chrome.alarms.create(alarm.name, { when: Date.now()+4000 });
 				}
 			});			
