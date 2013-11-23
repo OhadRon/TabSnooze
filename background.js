@@ -31,6 +31,12 @@ chrome.runtime.onInstalled.addListener(function (details){
 	}
 });
 
+// Refresh everything on a new session
+chrome.runtime.onStartup.addListener(function(){
+	console.log(timeStamp(), 'Startup detected, reloading.')
+	chrome.runtime.reload();
+});
+
 
 function seeStorage(){
 	chrome.storage.local.get(null,function(result){ console.log(result)});
