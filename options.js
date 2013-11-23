@@ -35,7 +35,7 @@ storage.get('snoozeList', function(result){
 			} else {
 				image = '';
 			}
-			var newLi = '<li>'+image+'<a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')<div class="deleteSnooze" data-id='+thisSnooze.id+'>delete</div></li>';
+			var newLi = '<li>'+image+'<a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')<div class="deleteSnooze" data-id='+thisSnooze.id+'>×</div></li>';
 			$('#snoozeList').append(newLi);
 
 			$('div.deleteSnooze[data-id='+thisSnooze.id+']').on('click', function(){

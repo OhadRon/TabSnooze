@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>TabSnooze Settings</title>
+        <title>Tabsnooze Settings</title>
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
 
         <style type="text/css">
@@ -16,12 +16,63 @@
         	margin: 0 auto;
         	position: relative;
         	top: 20px;
-        	border: 1px solid #ccc;
         	padding: 10px;
         }
 
+        h1{
+            font-size: 40px;
+            font-style: italic;
+            color: #4EDCAE;
+        }
+
+        h2{
+            font-size: 14px;
+            font-weight: normal;
+        }
+
         h1,h2{
-        	text-align: center;
+        	text-align: left;
+        }
+
+        ul{
+            padding: 0;
+            display: block;
+        }
+
+        ul#snoozeList li{
+            height: 75px;
+            line-height: 75px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 0px 5px 0px 5px;
+            font-size: 13px;
+        }
+
+        ul#snoozeList li:first-child{
+            border-top: 1px solid #e5e5e5;
+        }
+
+        ul#snoozeList li img{
+            width: 18px;
+            height: 18px;
+            top: 2px;
+            margin: 0px 15px 0px 15px;
+            position: relative;
+        }
+
+        a, a:visited{
+            color: #3dbf8c;
+        }
+
+        ul#snoozeList li a{
+            font-size: 15px;
+        }
+
+        ul#snoozeList li .deleteSnooze{
+            color: #3dbf8c;
+            font-size: 24px;
+            margin-right: 10px;
+            text-decoration: none;
         }
 
         li{
@@ -29,23 +80,31 @@
         	list-style: none;
         }
 
-        li img{
-        	width: 18px;
-        	height: 18px;
-        	top: 2px;
-        	margin-right: 5px;
-        	position: relative;
+        ul#optionsList li{
+            height: 41px;
+            line-height: 41px;
+            font-size: 14px;
+        }
+
+        input[type=checkbox]{
+            margin-right: 20px;
+
         }
 
         #footer{
         	text-align: center;
+            clear: both;
         	font-size: 12px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border-top: 1px solid #e5e5e5;
         }
 
         input[type=text].timepreset{
         	padding: 2px;
-        	font-size: 17px;
+        	font-size: 15px;
         	font-family: 'Roboto',sans-serif;
+            margin-left: 70px;
         }
 
         button{
@@ -75,31 +134,33 @@
     </head>
 <body>
 <div id="container">
-	<h1>TabSnooze</h1>
+	<h1>Tabsnooze</h1>
 	<h2>Currently sleeping tabs:</h2>
 	<ul id="snoozeList">
 	</ul>
 
 	<h2>Options:</h2>
-	<ul>
+	<ul id="optionsList">
 		<li><input type="checkbox" class="optioncheckbox" data-option="closetab"> Automatically close snoozed tabs</li>
 		<li><input type="checkbox" class="optioncheckbox" data-option="notifications"> Show notifications</li>
 		<li><input type="checkbox" class="optioncheckbox" data-option="snoozebar"> Show snoozebar in snoozed tabs</li>
 		<li><input type="checkbox" class="optioncheckbox" data-option="background"> Start snooze tabs in the background</li>
-		<li>Time presets (in hours):<br> 
-			<ul>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-				<li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
-			</ul>
-		</li>
+		<li>Time presets (in hours):</li>
 	</ul>
-	<div id="footer">Made by <a href="http://ohadron.com">Ohad Ron</a>, 2013 <br><div id="vinfo"></div>	</div>
+    <ul>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+        <li><input type="text" class="timepreset" size="10"><div class="timedesc"></div></li>
+    </ul>
+
+	<div id="footer">Made by <a href="http://ohadron.com">Ohad Ron</a>, Designed by <a href="http://nitzan-ron.com">Nitzan Ron</a>, 2013<br>
+        <div id="vinfo"></div>	
+    </div>
 </div>
 <script type="text/javascript" src="jquery.min.js"></script>
 <script type="text/javascript" src="moment.min.js"></script>
