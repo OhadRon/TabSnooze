@@ -16,36 +16,38 @@ var storage = chrome.storage.local;
 
 var snoozeList;
 
-storage.get('snoozeList', function(result){
-	snoozeList = result.snoozeList;
+$(window).load(function(){
+	storage.get('snoozeList', function(result){
+		snoozeList = result.snoozeList;
 
+		// TODO: add a function in background.js that returns all the active snoozes, for this and for the popup count.
 
-	// TODO: add a function in background.js that returns all the active snoozes, for this and for the popup count.
+		for (var snooze in snoozeList){
+			var thisSnooze = snoozeList[snooze];
+			var timeFromNow = thisSnooze.openingTime-Date.now();
 
-	for (var snooze in snoozeList){
-		var thisSnooze = snoozeList[snooze];
-		var timeFromNow = thisSnooze.openingTime-Date.now();
+			var timeAgo = moment(thisSnooze.snoozeTime).fromNow();
+			if(timeFromNow>0){	
+				timeFromNow = (moment(thisSnooze.openingTime).fromNow());
+				var image;
+				if (thisSnooze.favIconUrl){
+					image = '<img src="'+thisSnooze.favIconUrl+'">';
+				} else {
+					image = '';
+				}
+				var newLi = '<li>'+image+'<a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')<div class="deleteSnooze" data-id='+thisSnooze.id+'>×</div></li>';
+				$('#snoozeList').append(newLi);
 
-		var timeAgo = moment(thisSnooze.snoozeTime).fromNow();
-		if(timeFromNow>0){	
-			timeFromNow = (moment(thisSnooze.openingTime).fromNow());
-			var image;
-			if (thisSnooze.favIconUrl){
-				image = '<img src="'+thisSnooze.favIconUrl+'">';
-			} else {
-				image = '';
+				$('div.deleteSnooze[data-id='+thisSnooze.id+']').on('click', function(){
+					var snoozeID = $(this).attr('data-id');
+					BGPage.deleteSnooze(snoozeID);
+					console.log('delete clicked', snoozeID);
+					$(this).parent('li').slideUp(100);
+				});
 			}
-			var newLi = '<li>'+image+'<a href="'+thisSnooze.url+'">'+thisSnooze.title+'</a> '+timeFromNow+' (Snoozed '+ timeAgo+')<div class="deleteSnooze" data-id='+thisSnooze.id+'>×</div></li>';
-			$('#snoozeList').append(newLi);
-
-			$('div.deleteSnooze[data-id='+thisSnooze.id+']').on('click', function(){
-				var deletionAlarmName = 'snoozeTab'+$(this).attr('data-id');
-				console.log('delete clicked', deletionAlarmName);
-				$(this).parent('li').remove();
-				chrome.alarms.clear(deletionAlarmName);
-			});
 		}
-	}
+
+	});
 });
 
 $(window).load(function(){

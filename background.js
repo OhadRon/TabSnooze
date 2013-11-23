@@ -136,6 +136,20 @@ function snooze(tab, time){
 	});
 }
 
+function deleteSnooze(id){
+	var deletionAlarmName = 'snoozeTab'+id;
+	console.log('deleting alarm', deletionAlarmName);
+	chrome.alarms.clear(deletionAlarmName);
+
+	storage.get('snoozeList', function(result){
+		var newList = result.snoozeList;
+		delete newList[deletionAlarmName];
+		console.log(timeStamp(),'Deleted snooze', id);
+		storage.set({ snoozeList : newList}, function(){});
+	});
+
+}
+
 chrome.alarms.onAlarm.addListener(function(alarm){
 	console.log(timeStamp(),'Alarm activated:', alarm)
 	storage.get(function(result){
